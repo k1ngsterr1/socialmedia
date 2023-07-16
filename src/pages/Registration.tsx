@@ -90,7 +90,7 @@ const Registration: React.FC = () => {
           onSubmit={registrationSubmit}
         >
           <Form className="flex flex-col m-auto" autoComplete="off">
-            <div className="flex mt-16 items-center justify-center relative">
+            <div className="flex mt-16 items-center justify-center ">
               <Field
                 type="text"
                 id="name"
@@ -101,7 +101,7 @@ const Registration: React.FC = () => {
               <ErrorMessage
                 name="name"
                 component="p"
-                className="text-red-600 font-bold text-lg flex align-center absolute right"
+                className="text-red-600 font-bold text-lg flex align-center absolute left-px"
               />
             </div>
             <div className="flex">
