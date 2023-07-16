@@ -11,14 +11,21 @@ const Login = () => {
             type="email"
             className="w-64 h-12 mt-16 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
             autoComplete="off"
+            name="email"
+            required
           ></input>
           <input
             placeholder="Password"
             type="password"
             className="w-64 h-12 mt-8 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
             autoComplete="off"
+            name="password"
+            required
           ></input>
-          <button className="bg-blue-500 w-32 h-12 cursor-pointer mt-8 m-auto text-white text-xl rounded hover:bg-blue-700 transition-colors duration-300">
+          <button
+            type="submit"
+            className="bg-blue-500 w-32 h-12 cursor-pointer mt-8 m-auto text-white text-xl rounded hover:bg-blue-700 transition-colors duration-300"
+          >
             Login
           </button>
           <div className="flex align-center m-auto mt-8">
