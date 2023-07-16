@@ -3,33 +3,79 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
+import "firebase/compat/firestore";
 
-const validationSchema = Yup.object({
-  name: Yup.string().required("Name is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    ),
-  confirmPassword: Yup.string()
-    .test("password-match", "Passwords must match", function (value) {
-      return value === this.resolve(Yup.ref("password"));
-    })
-    .nullable()
-    .required("Confirm Password is required"),
-});
+// const app = initializeApp(firebaseConfig);
 
-const Registration = () => {
+// const validationSchema = Yup.object({
+//   name: Yup.string().required("Name is required"),
+//   email: Yup.string().email("Invalid email").required("Email is required"),
+//   password: Yup.string()
+//     .required("Password is required")
+//     .min(8, "Password must be at least 8 characters")
+//     .matches(
+//       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+//       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+//     ),
+//   confirmPassword: Yup.string()
+//     .test("password-match", "Passwords must match", function (value) {
+//       return value === this.resolve(Yup.ref("password"));
+//     })
+//     .nullable()
+//     .required("Confirm Password is required"),
+// });
+
+const Registration: React.FC = () => {
   const initialValues = {
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+  };
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
+    confirmPassword: Yup.string()
+      .test("password-match", "Passwords must match", function (value) {
+        return value === this.resolve(Yup.ref("password"));
+      })
+      .nullable()
+      .required("Confirm Password is required"),
+  });
+
+  const registrationSubmit = async (values: typeof initialValues) => {
+    try {
+      const { name, email, password } = values;
+
+      if (name && email && password) {
+        const userCredential = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(email, password);
+
+        await userCredential.user?.updateProfile({ displayName: name });
+
+        const db = firebase.firestore();
+        await db.collection("users").doc(userCredential.user?.uid).set({
+          name,
+          email,
+          password,
+        });
+      } else {
+        console.log("Please provide all required fields");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -38,46 +84,79 @@ const Registration = () => {
         <h1 className="text-5xl font-bold text-center text-gray-800">
           Registration
         </h1>
-        <form className="flex flex-col m-auto" autoComplete="off">
-          <input
-            placeholder="Username"
-            type="text"
-            className="w-64 h-12 mt-16 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
-            autoComplete="off"
-            name="name"
-            required
-          ></input>
-          <input
-            placeholder="Email"
-            type="email"
-            className="w-64 h-12 mt-8 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
-            autoComplete="off"
-            name="email"
-            required
-          ></input>
-          <input
-            placeholder="Password"
-            type="password"
-            className="w-64 h-12 mt-8 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
-            autoComplete="off"
-            name="password"
-            required
-          ></input>
-          <input
-            placeholder="Confirm password"
-            type="password"
-            className="w-64 h-12 mt-8 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
-            autoComplete="off"
-            name="password"
-            required
-          ></input>
-          <button
-            type="submit"
-            className="bg-blue-500 w-32 h-12 cursor-pointer mt-8 m-auto text-white text-xl rounded hover:bg-blue-700 transition-colors duration-300"
-          >
-            Register
-          </button>
-        </form>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={registrationSubmit}
+        >
+          <Form className="flex flex-col m-auto" autoComplete="off">
+            <div className="flex mt-16 items-center justify-center relative">
+              <Field
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Username"
+                className="w-64 h-12 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
+              />{" "}
+              <ErrorMessage
+                name="name"
+                component="p"
+                className="text-red-600 font-bold text-lg flex align-center absolute right"
+              />
+            </div>
+            <div className="flex">
+              <Field
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                className="w-64 h-12 mt-4 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
+              />
+            </div>
+            <div className="flex">
+              <Field
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                className="w-64 h-12 mt-4 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
+              />
+            </div>
+            <div className="flex">
+              <Field
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="w-64 h-12 mt-4 text-gray-900 pl-4 outline-none border-solid border-2 border-teal-400 rounded focus:border-teal-600"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 w-32 h-12 cursor-pointer mt-8 m-auto text-white text-xl rounded hover:bg-blue-700 transition-colors duration-300"
+            >
+              Register
+            </button>
+
+            <ErrorMessage
+              name="email"
+              component="div"
+              className="text-red-600 font-bold text-lg mt-4"
+            />
+
+            <ErrorMessage
+              name="password"
+              component="div"
+              className="text-red-600 font-bold text-lg mt-4"
+            />
+
+            <ErrorMessage
+              name="confirmPassword"
+              component="div"
+              className="text-red-600 font-bold text-lg mt-4"
+            />
+          </Form>
+        </Formik>
       </div>
     </div>
   );
