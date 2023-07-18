@@ -4,6 +4,8 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
@@ -21,6 +23,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const firestore = getFirestore(app);
 
 const Registration: React.FC = () => {
   const initialValues = {
