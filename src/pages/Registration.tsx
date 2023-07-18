@@ -137,19 +137,16 @@ const Registration: React.FC = () => {
             >
               Register
             </button>
-
             <ErrorMessage
               name="email"
               component="div"
               className="text-red-600 font-bold text-lg mt-4"
             />
-
             <ErrorMessage
               name="password"
               component="div"
               className="text-red-600 font-bold text-lg mt-4"
             />
-
             <ErrorMessage
               name="confirmPassword"
               component="div"
