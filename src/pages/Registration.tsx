@@ -28,6 +28,11 @@ import "firebase/compat/firestore";
 // });
 
 const Registration: React.FC = () => {
+  const styles = {
+    "--left-px-value": "150px",
+    "--top-px-value": "80px",
+  };
+
   const initialValues = {
     name: "",
     email: "",
@@ -101,7 +106,7 @@ const Registration: React.FC = () => {
               <ErrorMessage
                 name="name"
                 component="p"
-                className="text-red-600 font-bold text-lg flex align-center absolute left-px"
+                className="text-red-600 font-bold text-lg flex align-center"
               />
             </div>
             <div className="flex">
