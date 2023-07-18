@@ -3,6 +3,8 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
+// Firebase
+
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -10,6 +12,9 @@ import { getFirestore } from "firebase/firestore";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+
+// Navigate
+import { useNavigate } from "react-router-dom";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDV28bf3A8whHJ7N7Got6RrXCKhHAPYjYU",
@@ -24,10 +29,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
 const firestore = getFirestore(app);
 
 const Registration: React.FC = () => {
+  const navigate = useNavigate();
+
   const initialValues = {
     name: "",
     email: "",
@@ -65,6 +71,7 @@ const Registration: React.FC = () => {
         await userCredential.user?.updateProfile({ displayName: name });
 
         const db = firebase.firestore();
+
         await db.collection("users").doc(userCredential.user?.uid).set({
           name,
           email,
@@ -72,6 +79,8 @@ const Registration: React.FC = () => {
         });
 
         console.log("Registration was successful");
+
+        navigate("/main");
       } else {
         console.log("Please provide all required fields");
       }
