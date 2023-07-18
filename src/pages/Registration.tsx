@@ -3,9 +3,24 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
+import { initializeApp } from "firebase/app";
+
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDV28bf3A8whHJ7N7Got6RrXCKhHAPYjYU",
+  authDomain: "studyapp-90324.firebaseapp.com",
+  projectId: "studyapp-90324",
+  storageBucket: "studyapp-90324.appspot.com",
+  messagingSenderId: "440148036708",
+  appId: "1:440148036708:web:eb636de1a68188b393e371",
+  measurementId: "G-EK7YKTGEM6",
+};
+
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
 
 const Registration: React.FC = () => {
   const initialValues = {
@@ -50,6 +65,8 @@ const Registration: React.FC = () => {
           email,
           password,
         });
+
+        console.log("Registration was successful");
       } else {
         console.log("Please provide all required fields");
       }
