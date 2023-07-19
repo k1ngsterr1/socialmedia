@@ -1,13 +1,13 @@
 import React from "react";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
 // Firebase
 
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { collection, getFirestore } from "firebase/firestore";
 
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
@@ -34,6 +34,10 @@ const firestore = getFirestore(app);
 const Registration: React.FC = () => {
   const navigate = useNavigate();
 
+  const handleRedirect = () => {
+    navigate("/main");
+  };
+
   const initialValues = {
     name: "",
     email: "",
@@ -59,7 +63,10 @@ const Registration: React.FC = () => {
       .required("Confirm Password is required"),
   });
 
-  const registrationSubmit = async (values: typeof initialValues) => {
+  const registrationSubmit = async (
+    values: typeof initialValues,
+    { resetForm }: FormikHelpers<typeof initialValues>
+  ) => {
     try {
       const { name, email, password } = values;
 
@@ -70,17 +77,23 @@ const Registration: React.FC = () => {
 
         await userCredential.user?.updateProfile({ displayName: name });
 
-        const db = firebase.firestore();
+        try {
+          console.log(userCredential.user?.uid);
 
-        await db.collection("users").doc(userCredential.user?.uid).set({
-          name,
-          email,
-          password,
-        });
+          const db = firebase.firestore();
 
-        console.log("Registration was successful");
+          await db.collection("users").doc(userCredential.user?.uid).set({
+            name,
+            email,
+            password,
+          });
 
-        navigate("/main");
+          console.log("Registration was successful");
+          resetForm();
+          navigate("/main");
+        } catch (error) {
+          console.error("Error writing to Firestore:", error);
+        }
       } else {
         console.log("Please provide all required fields");
       }
